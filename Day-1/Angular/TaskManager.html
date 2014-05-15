@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" ng-app>
+<head>
+	<meta charset="UTF-8">
+	<title>Task Manager</title>
+	<style>
+	.completed{
+		color : red;
+		text-decoration: line-through;
+		font-style: italic;
+	}
+	</style>
+</head>
+<body data-ng-controller="TaskController">
+	<h1>Task Manager</h1>
+	<hr>
+	<span>Task :</span>
+	<input type="text" name="" id="">
+	<input type="button" value="Add Task">
+	<input type="button" value="Remove Completed">
+	<ul>
+		<li data-ng-repeat="task in list">{{task}}</li>
+	</ul>
+	<div></div>
+	<script src="angular.js"></script>
+	<script>
+	function TaskController($scope){
+		$scope.list = ['Task - 1', 'Task - 2', 'Task - 3'];
+	}
+	</script>
+</body>
+</html>
