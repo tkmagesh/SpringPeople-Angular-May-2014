@@ -15,17 +15,45 @@
 	<h1>Task Manager</h1>
 	<hr>
 	<span>Task :</span>
-	<input type="text" name="" id="">
-	<input type="button" value="Add Task">
-	<input type="button" value="Remove Completed">
+	<input type="text" data-ng-model="newTaskName">
+	<input type="button" value="Add Task" data-ng-click="tasks.addTask(newTaskName)">
+	<input type="button" value="Remove Completed" data-ng-click="tasks.removeCompleted()" data-ng-disabled="tasks.getCompletedCount() <= 0">
 	<ul>
-		<li data-ng-repeat="task in list">{{task}}</li>
+		<li data-ng-repeat="task in tasks.list" data-ng-click="task.toggleCompletion()" data-ng-class="{completed : task.isCompleted}">{{task.name}}</li>
 	</ul>
-	<div></div>
+	<div data-ng-show="tasks.list.length > 0">
+		<div>Total Task # : {{tasks.list.length}}</div>
+		<div>Completed # : {{tasks.getCompletedCount()}}</div>
+	</div>
 	<script src="angular.js"></script>
 	<script>
+	function Task(name){
+		this.name = name;
+		this.isCompleted = false;
+	}
+	Task.prototype.toggleCompletion = function(){
+		this.isCompleted = !this.isCompleted;
+	}
+
+
 	function TaskController($scope){
-		$scope.list = ['Task - 1', 'Task - 2', 'Task - 3'];
+		$scope.tasks = {
+			list : [],
+			addTask : function(newTaskName){
+				var newTask = new Task(newTaskName);
+				this.list.push(newTask);
+			},
+			removeCompleted : function(){
+				for(var i=this.list.length-1;i>=0;i--){
+					var task = this.list[i];
+					if (task.isCompleted)
+						this.list.splice(i,1);
+				}
+			},
+			getCompletedCount : function(){
+				return this.list.filter(function(t) { return t.isCompleted;}).length;
+			}
+		}
 	}
 	</script>
 </body>
