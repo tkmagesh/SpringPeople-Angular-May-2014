@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using TaskManagerMVC.Models;
 
@@ -10,6 +11,12 @@ namespace TaskManagerMVC.Infrastructure
     {
         private static Dictionary<string, Task> _list = new Dictionary<string, Task>();
 
+        static TaskRepository()
+        {
+            AddNew(new Task{ name = "Default Task - 1"});
+            AddNew(new Task { name = "Default Task - 2" });
+            AddNew(new Task { name = "Default Task - 3" });
+        }
         public static Task AddNew(Task task)
         {
             task.id = Guid.NewGuid().ToString();
@@ -28,6 +35,7 @@ namespace TaskManagerMVC.Infrastructure
 
         public static Task[] GetAll()
         {
+            //Thread.Sleep(15000);
             return _list.Values.ToArray<Task>();
         }
 
