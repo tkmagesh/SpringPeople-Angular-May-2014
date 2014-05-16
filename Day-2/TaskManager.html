@@ -19,7 +19,7 @@
 	<input type="button" value="Add Task" data-ng-click="tasks.addTask(newTaskName)">
 	<input type="button" value="Remove Completed" data-ng-click="tasks.removeCompleted()" data-ng-disabled="tasks.getCompletedCount() <= 0">
 	<ul>
-		<li data-ng-repeat="task in tasks.list" data-ng-click="task.toggleCompletion()" data-ng-class="{completed : task.isCompleted}">{{task.name}}</li>
+		<li data-ng-repeat="task in tasks.list" data-ng-click="task.toggleCompletion()" data-ng-class="{completed : task.isCompleted}">{{task | taskFilter}}</li>
 	</ul>
 	<div data-ng-show="tasks.list.length > 0">
 		<div>Total Task # : {{tasks.list.length}}</div>
@@ -34,6 +34,7 @@
 			function Task(name){
 				this.name = name;
 				this.isCompleted = false;
+				this.createdAt = new Date();
 			}
 			Task.prototype.toggleCompletion = function(){
 				this.isCompleted = !this.isCompleted;
@@ -48,6 +49,11 @@
 				console.log("total messages sent = ", ++msgCount);
 			}
 
+		})
+		.filter("taskFilter",function(){
+			return function(task){
+				return task.name + "[created at " + task.createdAt.toString() + "]";
+			}
 		})
 		.controller("TaskController",function($scope, Task, notificationService){
 			console.log("Task type is ", typeof Task);
