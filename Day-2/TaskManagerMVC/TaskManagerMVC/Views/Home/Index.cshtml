@@ -1,0 +1,95 @@
+﻿@{
+    Layout = null;
+}
+
+
+<!doctype html>
+<html lang="en" ng-app="taskApp">
+<head>
+	<meta charset="UTF-8">
+	<title>Task Manager</title>
+	<style>
+	.completed{
+		color : red;
+		text-decoration: line-through;
+		font-style: italic;
+	}
+	</style>
+</head>
+<body data-ng-controller="TaskController">
+	<h1>Task Manager</h1>
+	<hr>
+	<span>Task :</span>
+	<input type="text" data-ng-model="newTaskName">
+	<input type="button" value="Add Task" data-ng-click="tasks.addTask(newTaskName)">
+	<input type="button" value="Remove Completed" data-ng-click="tasks.removeCompleted()" data-ng-disabled="tasks.getCompletedCount() <= 0">
+	<ul>
+		<li data-ng-repeat="task in tasks.list" data-ng-click="task.toggleCompletion()" data-ng-class="{completed : task.isCompleted}">{{task | taskFilter}}</li>
+	</ul>
+	<div data-ng-show="tasks.list.length > 0">
+		<div>Total Task # : {{tasks.list.length}}</div>
+		<div>Completed # : {{tasks.getCompletedCount()}}</div>
+	</div>
+	<div data-ng-controller="dummyController" data-ng-click="sendDummyMessage()">Dummy Div</div>
+	<script src="~/Public/Scripts/angular.js"></script>
+	<script>
+	angular
+		.module('taskApp',[])
+		.factory('Task',function(){
+			function Task(name){
+				this.name = name;
+				this.isCompleted = false;
+				this.createdAt = new Date();
+			}
+			Task.prototype.toggleCompletion = function(){
+				this.isCompleted = !this.isCompleted;
+			}
+			return Task;
+		})
+		.service("notificationService",function NotificationService(){
+			var msgCount = 0;
+			this.sendMessage = function(msg){
+				console.log(msg, "- is sent");
+
+				console.log("total messages sent = ", ++msgCount);
+			}
+
+		})
+		.filter("taskFilter",function(){
+			return function(task){
+				return task.name + "[created at " + task.createdAt.toString() + "]";
+			}
+		})
+		.controller("TaskController",function($scope, Task, notificationService){
+			console.log("Task type is ", typeof Task);
+			$scope.tasks = {
+				list : [],
+				addTask : function(newTaskName){
+					var newTask = new Task(newTaskName);
+					this.list.push(newTask);
+					notificationService.sendMessage("A new task is added ");
+				},
+				removeCompleted : function(){
+					for(var i=this.list.length-1;i>=0;i--){
+						var task = this.list[i];
+						if (task.isCompleted)
+							this.list.splice(i,1);
+					}
+					notificationService.sendMessage("Zero or more completed tasks are removed");
+				},
+				getCompletedCount : function(){
+					return this.list.filter(function(t) { return t.isCompleted;}).length;
+				}
+			}
+		})
+		.controller("dummyController",function($scope,Task,notificationService){
+			console.log(Task, "from dummyController");
+			$scope.sendDummyMessage = function(){
+				notificationService.sendMessage("a dummy messages is to be sent");
+			}
+		});
+
+
+	</script>
+</body>
+</html>
